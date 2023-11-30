@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Freshdesk Ticket</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Create Freshdesk Ticket</h1>
+
+    <form id="ticketForm">
+      <label for="subject">Subject:</label>
+      <input type="text" id="subject" name="subject" required />
+
+      <label for="description">Description:</label>
+      <textarea
+        id="description"
+        name="description"
+        rows="4"
+        required
+      ></textarea>
+
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required />
+
+      <label for="priority">Priority:</label>
+      <select id="priority" name="priority" required>
+        <option value="low">Low</option>
+        <option value="medium">Medium</option>
+        <option value="high">High</option>
+        <option value="urgent">Urgent</option>
+      </select>
+
+      <label for="status">Status:</label>
+      <select id="status" name="status" required>
+        <option value="Open">Open</option>
+        <option value="Pending">Pending</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Closed">Closed</option>
+      </select>
+
+      <button type="button" onclick="createTicket()">Create Ticket</button>
+    </form>
+
+    <script>
+      // Priority mapping dictionary
+      const priorityMapping = {
+        low: 1,
+        medium: 2,
+        high: 3,
+        urgent: 4,
+      };
+
+      // Status mapping dictionary
+      const statusMapping = {
+        Open: 2,
+        Pending: 3,
+        Resolved: 4,
+        Closed: 5,
+      };
+
+      async function createTicket() {
+        const form = {
+          subject: document.getElementById("subject").value,
+          description: document.getElementById("description").value,
+          email: document.getElementById("email").value,
+          priority: priorityMapping[document.getElementById("priority").value],
+          status: statusMapping[document.getElementById("status").value],
+        };
+        const apiKey = "fsSSZsXPJ7mOp87IX95";
+
+        try {
+          const response = await fetch(
+            "https://mytestapp.freshdesk.com/api/v2/tickets",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Basic " + btoa(apiKey + ":X"),
+              },
+              body: JSON.stringify(form),
+            }
+          );
+
+          if (response.status === 201) {
+            const data = await response.json();
+            console.log("Ticket created successfully! Ticket ID:", data);
+            alert("Ticket created successfully! Ticket ID: " + data.id);
+          } else {
+            console.error(
+              "Error creating ticket. Status Code:",
+              response.status
+            );
+            alert("Error creating ticket. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error creating ticket:", error.message);
+          alert("Error creating ticket. Please try again.");
+        }
+      }
+    </script>
+  </body>
+</html>
